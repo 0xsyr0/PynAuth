@@ -84,7 +84,7 @@ def authorized():
         result = _build_msal_app(cache=cache).acquire_token_by_authorization_code(
             request.args['code'],
             scopes=app_config.SCOPE,  # Misspelled scope would cause an HTTP 400 error here
-            redirect_uri=url_for("authorized", _external=True))
+            redirect_uri=url_for("authorized", _external=True)).replace('http://', 'https://'))
         if "error" in result:
             return render_template("auth_error.html", result=result)
         session["user"] = result.get("id_token_claims")
@@ -110,7 +110,7 @@ def _build_auth_url(authority=None, scopes=None, state=None):
     return _build_msal_app(authority=authority).get_authorization_request_url(
         scopes or [],
         state=state or str(uuid.uuid4()),
-        redirect_uri=url_for("authorized", _external=True))
+        redirect_uri=url_for("authorized", _external=True).replace('http://', 'https://'))
 
 
 #----------------------------This next function has been modified to include email address and refresh token.----------------------------#
